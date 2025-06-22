@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'todo_view_model.dart';
 import 'main.dart';
 import 'todo_add_button.dart';
+import 'todo_detail_sheet.dart';
 
 class TodoListView extends ConsumerWidget {
   const TodoListView({Key? key}) : super(key: key);
@@ -30,24 +31,32 @@ class TodoListView extends ConsumerWidget {
                     itemCount: todos.length,
                     itemBuilder: (context, index) {
                       final todo = todos[index];
-                      return ListTile(
-                        leading: Checkbox(
-                          value: todo.isDone,
-                          onChanged: (checked) {
-                            ref.read(todoViewModelProvider.notifier).toggleTodo(todo.id, !(todo.isDone));
-                          },
+                      return Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        title: Text(
-                          todo.title,
-                          style: TextStyle(
-                            decoration: todo.isDone ? TextDecoration.lineThrough : null,
-                            color: todo.isDone ? Colors.grey : null,
+                        child: ListTile(
+                          leading: Checkbox(
+                            value: todo.isDone,
+                            onChanged: (checked) {
+                              ref.read(todoViewModelProvider.notifier).toggleTodo(todo.id, !(todo.isDone));
+                            },
                           ),
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            ref.read(todoViewModelProvider.notifier).deleteTodo(todo.id);
+                          title: Text(
+                            todo.title,
+                            style: TextStyle(
+                              decoration: todo.isDone ? TextDecoration.lineThrough : null,
+                              color: todo.isDone ? Colors.grey : null,
+                            ),
+                          ),
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              builder: (context) => TodoDetailSheet(title: todo.title, todoId: todo.id),
+                            );
                           },
                         ),
                       );
