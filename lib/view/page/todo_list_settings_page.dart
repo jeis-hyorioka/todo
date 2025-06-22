@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:todo/view_model/invite_view_model.dart';
 import 'package:todo/main.dart';
-import 'package:todo/model/todo_list.dart';
 import 'package:todo/repository/todo_list_repository.dart' as repo;
-import 'invite_code_issued_dialog.dart';
+import 'package:todo/model/todo_list.dart';
+import 'package:todo/view_model/invite_view_model.dart';
+import 'package:todo/view/page/invite_code_issued_dialog.dart';
 
 class TodoListSettingsPage extends ConsumerStatefulWidget {
   final TodoList list;

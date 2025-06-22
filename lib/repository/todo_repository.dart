@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../model/todo.dart';
-
+import 'package:todo/model/todo.dart';
 
 class TodoRepository {
   final FirebaseFirestore firestore;
