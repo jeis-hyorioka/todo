@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'todo_view_model.dart';
-import 'main.dart';
-import 'todo_add_button.dart';
-import 'todo_detail_sheet.dart';
-import 'model/todo_list.dart';
+import 'package:todo/main.dart';
+import 'package:todo/todo_add_button.dart';
+import 'package:todo/todo_detail_sheet.dart';
+import 'package:todo/todo_view_model.dart';
 
 class TodoListView extends ConsumerWidget {
   const TodoListView({Key? key}) : super(key: key);

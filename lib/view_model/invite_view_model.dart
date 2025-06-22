@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:todo/main.dart';
-import 'invite_repository.dart';
+import '../repository/invite_repository.dart';
 
 final inviteViewModelProvider = StateNotifierProvider.autoDispose<InviteViewModel, AsyncValue<String?>>((ref) {
   final firestore = ref.watch(firestoreProvider);

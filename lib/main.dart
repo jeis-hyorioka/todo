@@ -17,8 +17,8 @@ import 'todo_view_model.dart';
 import 'todo_list_view_model.dart';
 import 'invite_view_model.dart';
 import 'todo_list_settings_page.dart';
-import 'models/todo.dart';
-import 'models/todo_list.dart';
+import 'model/todo.dart';
+import 'model/todo_list.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

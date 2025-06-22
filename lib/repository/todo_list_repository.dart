@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'model/todo_list.dart';
+import '../model/todo_list.dart';
 
 class TodoListRepository {
   final FirebaseFirestore firestore;

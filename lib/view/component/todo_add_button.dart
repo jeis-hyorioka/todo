@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'todo_view_model.dart';
+import '../../view_model/todo_view_model.dart';
 
 class TodoAddButton extends ConsumerWidget {
   const TodoAddButton({super.key});

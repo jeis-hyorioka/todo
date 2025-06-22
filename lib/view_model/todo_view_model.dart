@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'todo_repository.dart';
-import 'main.dart';
-import 'model/todo.dart';
+import 'package:todo/main.dart';
+import '../model/todo.dart';
+import '../repository/todo_repository.dart';
 
 final todoViewModelProvider = StateNotifierProvider.autoDispose<TodoViewModel, AsyncValue<List<Todo>>>((ref) {
   final firestore = ref.watch(firestoreProvider);
