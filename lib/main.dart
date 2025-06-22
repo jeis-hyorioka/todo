@@ -1,24 +1,25 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:todo/firebase_options.dart';
-import 'package:todo/side_menu.dart';
-import 'package:todo/todo_list_selector.dart';
-import 'package:todo/invite_code_dialog.dart';
-import 'package:todo/invite_code_issued_dialog.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'todo_list_view.dart';
-import 'todo_view_model.dart';
-import 'todo_list_view_model.dart';
-import 'invite_view_model.dart';
-import 'todo_list_settings_page.dart';
-import 'model/todo.dart';
-import 'model/todo_list.dart';
+import 'package:todo/model/todo_list.dart';
+import 'package:todo/model/todo.dart';
+
+import 'firebase_options.dart';
+import 'package:todo/view/page/invite_code_dialog.dart';
+import 'package:todo/view/page/invite_code_issued_dialog.dart';
+import 'package:todo/view/page/side_menu.dart';
+import 'package:todo/view/page/todo_list_selector.dart';
+import 'package:todo/view/page/todo_list_settings_page.dart';
+import 'package:todo/view/page/todo_list_view.dart';
+import 'package:todo/view_model/todo_list_view_model.dart';
+import 'package:todo/view_model/todo_view_model.dart';
+import 'package:todo/view_model/invite_view_model.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
