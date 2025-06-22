@@ -43,6 +43,15 @@ lib/
 3. `flutter pub get` で依存解決
 4. 各プラットフォームでビルド・実行
 
+## Firebase設定ファイルについて
+
+このリポジトリにはFirebaseの設定ファイル（`lib/firebase_options.dart`、`android/app/google-services.json`、`ios/Runner/GoogleService-Info.plist`）は含まれていません。
+
+各自でFirebaseプロジェクトを作成し、これらのファイルを用意してください。
+
+- これらのファイルは**秘匿情報を含むため、公開リポジトリには含めません**。
+- 詳細は[FlutterFire公式ドキュメント](https://firebase.flutter.dev/docs/overview/)を参照してください。
+
 ## 注意事項
 - Firestoreのセキュリティルール・認証設定を必ずご確認ください
 - GoogleログインにはFirebase Authの設定が必要です
