@@ -1,28 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-class Todo {
-  final String id;
-  final String title;
-  final bool isDone;
-
-  Todo({required this.id, required this.title, required this.isDone});
-
-  factory Todo.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return Todo(
-      id: doc.id,
-      title: data['title'] ?? '',
-      isDone: data['isDone'] ?? false,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'title': title,
-      'isDone': isDone,
-    };
-  }
-}
+import 'models/todo.dart';
 
 class TodoRepository {
   final FirebaseFirestore firestore;
@@ -52,4 +29,17 @@ class TodoRepository {
   Future<void> toggleTodo(String id, bool isDone) async {
     await _todosRef.doc(id).update({'isDone': isDone});
   }
+}
+
+class DummyTodoRepository extends TodoRepository {
+  DummyTodoRepository() : super(firestore: FirebaseFirestore.instance, listId: 'dummy');
+
+  @override
+  Stream<List<Todo>> watchTodos() => const Stream.empty();
+  @override
+  Future<void> addTodo(String title) async {}
+  @override
+  Future<void> deleteTodo(String id) async {}
+  @override
+  Future<void> toggleTodo(String id, bool isDone) async {}
 }

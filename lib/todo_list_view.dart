@@ -4,6 +4,7 @@ import 'todo_view_model.dart';
 import 'main.dart';
 import 'todo_add_button.dart';
 import 'todo_detail_sheet.dart';
+import 'models/todo_list.dart';
 
 class TodoListView extends ConsumerWidget {
   const TodoListView({Key? key}) : super(key: key);

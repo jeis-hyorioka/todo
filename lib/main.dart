@@ -17,6 +17,8 @@ import 'todo_view_model.dart';
 import 'todo_list_view_model.dart';
 import 'invite_view_model.dart';
 import 'todo_list_settings_page.dart';
+import 'models/todo.dart';
+import 'models/todo_list.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -136,36 +138,6 @@ class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.user});
   @override
   State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class Todo {
-  String id;
-  String title;
-  bool isDone;
-  Todo({required this.id, required this.title, this.isDone = false});
-  factory Todo.fromDoc(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return Todo(
-      id: doc.id,
-      title: data['title'] ?? '',
-      isDone: data['isDone'] ?? false,
-    );
-  }
-}
-
-class TodoList {
-  String id;
-  String name;
-  List<String> members;
-  TodoList({required this.id, required this.name, required this.members});
-  factory TodoList.fromDoc(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return TodoList(
-      id: doc.id,
-      name: data['name'] ?? '',
-      members: List<String>.from(data['members'] ?? []),
-    );
-  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -408,64 +380,27 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             actions: [
-              IconButton(
-                icon: const Icon(Icons.add),
-                tooltip: '新しいリストを作成',
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => Consumer(
-                      builder: (context, ref, _) {
-                        final listVM = ref.read(todoListViewModelProvider.notifier);
-                        return AlertDialog(
-                          title: const Text('新しいリストを作成'),
-                          content: TextField(
-                            controller: _listNameController,
-                            decoration: const InputDecoration(hintText: 'リスト名'),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text('キャンセル'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () async {
-                                Navigator.pop(context); // 先にダイアログを閉じる
-                                final id = await listVM.createList(_listNameController.text.trim());
-                                _listNameController.clear();
-                                if (id != null) {
-                                  final container = ProviderScope.containerOf(context);
-                                  container.read(listIdProvider.notifier).state = id;
-                                }
-                              },
-                              child: const Text('作成'),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
               Consumer(
                 builder: (context, ref, _) {
                   final listId = ref.watch(listIdProvider);
                   final isListSelected = listId != null && listId.isNotEmpty;
                   return IconButton(
-                    icon: const Icon(Icons.link),
-                    tooltip: '招待コードを発行',
+                    icon: const Icon(Icons.settings),
+                    tooltip: 'リスト設定',
                     onPressed: isListSelected
-                        ? () async {
-                            final inviteVM = ref.read(inviteViewModelProvider.notifier);
-                            final code = await inviteVM.generateInviteCode(listId!);
-                            if (context.mounted && code != null) {
-                              showDialog(
-                                context: context,
-                                builder: (context) => InviteCodeIssuedDialog(code: code),
-                              );
-                            }
+                        ? () {
+                            final lists = snapshot.hasData
+                                ? snapshot.data!.docs.map((doc) => TodoList.fromDoc(doc)).toList()
+                                : <TodoList>[];
+                            final selected = lists.firstWhere(
+                              (l) => l.id == listId,
+                              orElse: () => lists.isNotEmpty ? lists.first : TodoList(id: '', name: '', members: []),
+                            );
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => TodoListSettingsPage(list: selected),
+                              ),
+                            );
                           }
                         : null,
                   );

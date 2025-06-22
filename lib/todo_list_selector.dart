@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'todo_list_view_model.dart';
 import 'todo_list_repository.dart';
+import 'main.dart';
+import 'models/todo_list.dart';
 
 class TodoListSelectorSheet extends ConsumerWidget {
   final String? selectedListId;
@@ -48,12 +50,53 @@ class TodoListSelectorSheet extends ConsumerWidget {
                         onSelected(list);
                         Navigator.pop(context);
                       },
-                      trailing: IconButton(
-                        icon: const Icon(Icons.settings),
-                        onPressed: onSettings != null ? () => onSettings!(list) : null,
-                      ),
                     );
                   },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.add),
+                    label: const Text('リストを追加'),
+                    onPressed: () async {
+                      final controller = TextEditingController();
+                      final result = await showDialog<String>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('新しいリストを作成'),
+                          content: TextField(
+                            controller: controller,
+                            autofocus: true,
+                            decoration: const InputDecoration(hintText: 'リスト名'),
+                            onSubmitted: (v) => Navigator.of(context).pop(v.trim()),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('キャンセル'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.of(context).pop(controller.text.trim()),
+                              child: const Text('作成'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (result != null && result.isNotEmpty) {
+                        final listVM = ref.read(todoListViewModelProvider.notifier);
+                        if (listVM is TodoListViewModel) {
+                          final id = await listVM.createList(result);
+                          if (id != null) {
+                            ref.read(listIdProvider.notifier).state = id;
+                            Navigator.of(context).pop(); // 追加後にシートを閉じる
+                          }
+                        }
+                      }
+                    },
+                  ),
                 ),
               ),
             ],

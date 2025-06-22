@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'main.dart';
 import 'todo_list_repository.dart' as repo;
+import 'models/todo_list.dart';
+import 'invite_view_model.dart';
+import 'invite_code_issued_dialog.dart';
 
 class TodoListSettingsPage extends ConsumerStatefulWidget {
-  final repo.TodoList list;
+  final TodoList list;
   const TodoListSettingsPage({Key? key, required this.list}) : super(key: key);
 
   @override
@@ -82,6 +85,22 @@ class _TodoListSettingsPageState extends ConsumerState<TodoListSettingsPage> {
                   leading: const Icon(Icons.person),
                   title: Text(m),
                 )),
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.link),
+              label: const Text('招待コードを発行'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+              onPressed: () async {
+                final inviteVM = ref.read(inviteViewModelProvider.notifier);
+                final code = await inviteVM.generateInviteCode(list.id);
+                if (context.mounted && code != null) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => InviteCodeIssuedDialog(code: code),
+                  );
+                }
+              },
+            ),
           ],
         ),
       ),
