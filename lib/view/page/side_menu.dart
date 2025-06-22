@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:todo/view/page/profile_edit_page.dart';
 
 class SideMenu extends ConsumerWidget {
   final User user;
@@ -15,17 +17,15 @@ class SideMenu extends ConsumerWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          UserAccountsDrawerHeader(
-            accountName: Text(user.displayName ?? 'No Name'),
-            accountEmail: Text(user.email ?? ''),
-            currentAccountPicture: CircleAvatar(
-              child: Text(
-                (user.displayName != null && user.displayName!.isNotEmpty)
-                    ? user.displayName![0]
-                    : '?',
-                style: const TextStyle(fontSize: 32),
-              ),
-            ),
+          FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            future: FirebaseFirestore.instance.collection('users').doc(user.uid).get(),
+            builder: (context, snapshot) {
+              final nickname = snapshot.data?.data()?['nickname'] ?? '未登録';
+              return UserAccountsDrawerHeader(
+                accountName: Text(nickname),
+                accountEmail: Text(user.email ?? ''),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.input),
@@ -33,6 +33,16 @@ class SideMenu extends ConsumerWidget {
             onTap: () {
               Navigator.pop(context);
               onInviteJoin();
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('プロフィール編集'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ProfileEditPage()),
+              );
             },
           ),
           const Divider(),

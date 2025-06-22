@@ -82,8 +82,9 @@ class TodoListView extends ConsumerWidget {
           if (isListSelected)
             const Positioned(
               bottom: 24,
-              right: 24,
-              child: TodoAddButton(),
+              left: 0,
+              right: 0,
+              child: Center(child: TodoAddButton()),
             ),
         ],
       ),

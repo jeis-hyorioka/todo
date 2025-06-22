@@ -9,6 +9,8 @@ class TodoAddButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return FloatingActionButton(
       shape: const CircleBorder(),
+      elevation: 0, // ドロップシャドウなし
+      backgroundColor: const Color(0xFFFF9800), // アクセントオレンジ
       onPressed: () {
         showModalBottomSheet(
           context: context,
@@ -60,7 +62,7 @@ class TodoAddButton extends ConsumerWidget {
           },
         );
       },
-      child: const Icon(Icons.add),
+      child: const Icon(Icons.add, color: Colors.white), // 白いプラスアイコン
     );
   }
 }
