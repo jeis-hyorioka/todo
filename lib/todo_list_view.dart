@@ -28,11 +28,25 @@ class TodoListView extends ConsumerWidget {
                 ),
               if (isListSelected)
                 Expanded(
-                  child: ListView.builder(
+                  child: ReorderableListView.builder(
                     itemCount: todos.length,
+                    onReorder: (oldIndex, newIndex) async {
+                      await ref.read(todoViewModelProvider.notifier).reorderTodos(oldIndex, newIndex);
+                    },
+                    buildDefaultDragHandles: true,
+                    proxyDecorator: (child, index, animation) {
+                      // ドラッグ中もshadowを消す
+                      return Material(
+                        color: Colors.transparent,
+                        child: child,
+                        elevation: 0,
+                        shadowColor: Colors.transparent,
+                      );
+                    },
                     itemBuilder: (context, index) {
                       final todo = todos[index];
                       return Card(
+                        key: ValueKey(todo.id),
                         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         elevation: 2,
                         shape: RoundedRectangleBorder(

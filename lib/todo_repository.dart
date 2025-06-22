@@ -29,6 +29,10 @@ class TodoRepository {
   Future<void> toggleTodo(String id, bool isDone) async {
     await _todosRef.doc(id).update({'isDone': isDone});
   }
+
+  Future<void> updateOrder(String id, int order) async {
+    await _todosRef.doc(id).update({'order': order});
+  }
 }
 
 class DummyTodoRepository extends TodoRepository {
@@ -42,4 +46,6 @@ class DummyTodoRepository extends TodoRepository {
   Future<void> deleteTodo(String id) async {}
   @override
   Future<void> toggleTodo(String id, bool isDone) async {}
+  @override
+  Future<void> updateOrder(String id, int order) async {}
 }

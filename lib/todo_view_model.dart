@@ -58,6 +58,21 @@ class TodoViewModel extends StateNotifier<AsyncValue<List<Todo>>> {
       state = AsyncValue.error(e, st);
     }
   }
+
+  Future<void> reorderTodos(int oldIndex, int newIndex) async {
+    // Firestoreにorderフィールドを追加して順序を管理する実装例
+    final todos = state.value ?? [];
+    if (oldIndex < newIndex) newIndex--;
+    final updated = [...todos];
+    final moved = updated.removeAt(oldIndex);
+    updated.insert(newIndex, moved);
+    // Firestoreに新しい順序を反映
+    for (int i = 0; i < updated.length; i++) {
+      await repository.updateOrder(updated[i].id, i);
+    }
+    // ローカル状態も即時反映
+    state = AsyncValue.data(updated);
+  }
 }
 
 class DummyTodoViewModel extends TodoViewModel {
