@@ -6,16 +6,19 @@ class TodoRepository {
   final String listId;
 
   TodoRepository({required this.firestore, required this.listId})
-      : assert(listId.isNotEmpty, 'listId must not be empty');
+    : assert(listId.isNotEmpty, 'listId must not be empty');
 
-  CollectionReference get _todosRef => firestore
-      .collection('lists')
-      .doc(listId)
-      .collection('todos');
+  CollectionReference get _todosRef =>
+      firestore.collection('lists').doc(listId).collection('todos');
 
   Stream<List<Todo>> watchTodos() {
-    return _todosRef.orderBy('order').snapshots().map((snapshot) =>
-        snapshot.docs.map((doc) => Todo.fromFirestore(doc)).toList());
+    return _todosRef
+        .orderBy('order')
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => Todo.fromFirestore(doc)).toList(),
+        );
   }
 
   Future<void> addTodo(String title) async {
@@ -36,7 +39,8 @@ class TodoRepository {
 }
 
 class DummyTodoRepository extends TodoRepository {
-  DummyTodoRepository() : super(firestore: FirebaseFirestore.instance, listId: 'dummy');
+  DummyTodoRepository()
+    : super(firestore: FirebaseFirestore.instance, listId: 'dummy');
 
   @override
   Stream<List<Todo>> watchTodos() => const Stream.empty();
