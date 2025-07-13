@@ -14,7 +14,7 @@ class TodoRepository {
       .collection('todos');
 
   Stream<List<Todo>> watchTodos() {
-    return _todosRef.snapshots().map((snapshot) =>
+    return _todosRef.orderBy('order').snapshots().map((snapshot) =>
         snapshot.docs.map((doc) => Todo.fromFirestore(doc)).toList());
   }
 

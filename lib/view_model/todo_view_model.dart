@@ -4,30 +4,35 @@ import '../repository/todo_repository.dart';
 import '../main.dart';
 import '../model/todo.dart';
 
-final todoViewModelProvider = StateNotifierProvider.autoDispose<TodoViewModel, AsyncValue<List<Todo>>>((ref) {
-  final firestore = ref.watch(firestoreProvider);
-  final listId = ref.watch(listIdProvider);
-  return listId != null && listId.isNotEmpty
-      ? TodoViewModel(TodoRepository(firestore: firestore, listId: listId))
-      : DummyTodoViewModel();
-});
+final todoViewModelProvider =
+    StateNotifierProvider.autoDispose<TodoViewModel, AsyncValue<List<Todo>>>((
+      ref,
+    ) {
+      final firestore = ref.watch(firestoreProvider);
+      final listId = ref.watch(listIdProvider);
+      return listId != null && listId.isNotEmpty
+          ? TodoViewModel(TodoRepository(firestore: firestore, listId: listId))
+          : DummyTodoViewModel();
+    });
 
 class TodoViewModel extends StateNotifier<AsyncValue<List<Todo>>> {
   final TodoRepository repository;
   StreamSubscription<List<Todo>>? _subscription;
+  bool _isLocallyUpdating = false;
 
   // 通常用
   TodoViewModel(this.repository) : super(const AsyncValue.loading()) {
-    _subscription = repository.watchTodos().listen(
-      (todos) => state = AsyncValue.data(todos),
-      onError: (e, st) => state = AsyncValue.error(e, st),
-    );
+    _subscription = repository.watchTodos().listen((todos) {
+      if (!_isLocallyUpdating) {
+        state = AsyncValue.data(todos);
+      }
+    }, onError: (e, st) => state = AsyncValue.error(e, st));
   }
   // ダミー用
   TodoViewModel.empty()
-      : repository = DummyTodoRepository(),
-        _subscription = null,
-        super(const AsyncValue.data([]));
+    : repository = DummyTodoRepository(),
+      _subscription = null,
+      super(const AsyncValue.data([]));
 
   @override
   void dispose() {
@@ -60,18 +65,33 @@ class TodoViewModel extends StateNotifier<AsyncValue<List<Todo>>> {
   }
 
   Future<void> reorderTodos(int oldIndex, int newIndex) async {
-    // Firestoreにorderフィールドを追加して順序を管理する実装例
+    _isLocallyUpdating = true;
     final todos = state.value ?? [];
-    if (oldIndex < newIndex) newIndex--;
+    if (oldIndex < newIndex) {
+      newIndex--;
+    }
     final updated = [...todos];
     final moved = updated.removeAt(oldIndex);
     updated.insert(newIndex, moved);
-    // Firestoreに新しい順序を反映
-    for (int i = 0; i < updated.length; i++) {
-      await repository.updateOrder(updated[i].id, i);
-    }
-    // ローカル状態も即時反映
+    // ローカル状態を先に更新してUIに即時反映（楽観的UI）
     state = AsyncValue.data(updated);
+
+    // Firestoreに新しい順序を反映
+    try {
+      // 更新処理を並列で実行して効率化
+      final List<Future<void>> updateFutures = [];
+      for (int i = 0; i < updated.length; i++) {
+        updateFutures.add(repository.updateOrder(updated[i].id, i));
+      }
+      await Future.wait(updateFutures);
+    } catch (e, st) {
+      // エラーが発生した場合は、元の状態に戻すなどのエラーハンドリングを行う
+      state = AsyncValue.error(e, st);
+    } finally {
+      // 処理が完了したら、ストリームからの更新を受け入れるようにする
+      // これにより、DBの最新の状態がUIに反映され、ローカルの状態との整合性が検証される
+      _isLocallyUpdating = false;
+    }
   }
 }
 
